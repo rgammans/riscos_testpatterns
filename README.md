@@ -7,6 +7,9 @@ years for display adjustments. They were orginally used with
 some Custom VIDC and VIDC2 modes on a umber of machines Notably
 the A3020 .
 
+I've opted to distribute the Included files under the MIT
+license.
+
 ## Status
 I revived this project trun on Risc s for the Raspberry-Pi as that
 is a conviently small platform. The original aim for this
