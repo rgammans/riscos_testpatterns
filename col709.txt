@@ -1,0 +1,60 @@
+REM MODE MODE   :REM Reset Screen display. but leave in current mode.
+ON ERROR PRINTREPORT$;" at line ";ERL:END
+
+CLG
+OFF         : REM Turn off text cursor
+:
+REM The following four line read the current screen size co-ords.
+SYS "OS_ReadModeVariable",-1,4 TO ,,XEigFactor%
+SYS "OS_ReadModeVariable",-1,5 TO ,,YEigFactor%
+SYS "OS_ReadModeVariable",-1,11 TO ,,XSize%:XSize%+=1
+SYS "OS_ReadModeVariable",-1,12 TO ,,YSize%:YSize%+=1
+:
+
+XStep%=1<<XEigFactor%
+YStep%=1<<YEigFactor%
+MaxX%=XSize%<<XEigFactor%
+MaxY%=YSize%<<YEigFactor%
+CentreX%=MaxX% DIV 2
+CentreY%=MaxY% DIV 2
+
+DIM conv709(2,2)
+conv709() = 1,0,1.5701 ,1,-.187,-0.4664,1,-1.8556 ,0
+
+
+DIM rgb(2)
+DIM in(2)
+
+LUMA =0.5
+
+FOR X%= 0 TO MaxX% STEP XStep%
+    FOR Y%= 0 TO MaxY% STEP YStep%
+            u= (X%-CentreX%)/(2*CentreX%)
+            v =(Y%-CentreY%)/(2*CentreY%)
+            PROCyuv2rgb601(LUMA ,u,v)
+            REM PRINT  u,v
+            REM PRINT rgb(0),rgb(1),rgb(2)
+            GCOL INT(rgb(0)*255),INT(rgb(1)*255),INT(rgb(2)*255 )
+            PLOT 69, X%,Y%
+        NEXT
+NEXT
+
+
+END
+
+
+DEF PROCyuv2rgb601(y,u,v):
+    REM LOCAL DIM in(2)
+    in(0)=y
+    in(1)=u
+    in(2)=v
+
+    rgb() = conv709().in()
+    FOR c% = 0 TO 2
+
+     IF rgb(c%) < 0 THEN rgb(c%)=0
+     IF rgb(c%) > 1 THEN rgb(c%)=1
+
+
+ NEXT
+ENDPROC

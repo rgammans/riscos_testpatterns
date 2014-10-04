@@ -1,0 +1,29 @@
+REM MODE MODE   :REM Reset Screen display. but leave in current mode.
+CLG
+OFF         : REM Turn off text cursor
+:
+REM The following four line read the current screen size co-ords.
+SYS "OS_ReadModeVariable",-1,4 TO ,,XEigFactor%
+SYS "OS_ReadModeVariable",-1,5 TO ,,YEigFactor%
+SYS "OS_ReadModeVariable",-1,11 TO ,,XSize%:XSize%+=1
+SYS "OS_ReadModeVariable",-1,12 TO ,,YSize%:YSize%+=1
+:
+REM Now calculate the satrting point and step size for 8x10 grid
+startX%=(XSize%/20)<<XEigFactor%
+endX%=XSize%<<XEigFactor%
+XStep%=(XSize%/10 )<<XEigFactor%
+:
+startY%=(YSize%/16)<<YEigFactor%
+endY%=YSize%<<YEigFactor%
+YStep%=(YSize%/8)<<YEigFactor%
+:
+REM Draw the grid
+FOR X%=startX% TO endX% STEP XStep%
+MOVEX%,0
+DRAWX%,endY%
+NEXT
+FOR Y%=startY% TO endY% STEP YStep%
+MOVE0,Y%
+DRAWendX%,Y%
+NEXT
+REM OSCLI("<MonitorTest$Dir>.!Runimage")

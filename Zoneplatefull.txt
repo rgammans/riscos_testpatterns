@@ -1,0 +1,58 @@
+REM MODE MODE   :REM Reset Screen display. but leave
+CLG
+REM in current mode.
+OFF         : REM Turn off text cursor
+ON ERROR PRINTREPORT$;" at line ";ERL:END
+
+
+:
+REM The following four line read the current screen size co-ords.
+SYS "OS_ReadModeVariable",-1,4 TO ,,XEigFactor%
+SYS "OS_ReadModeVariable",-1,5 TO ,,YEigFactor%
+SYS "OS_ReadModeVariable",-1,11 TO ,,XSize%:XSize%+=1
+SYS "OS_ReadModeVariable",-1,12 TO ,,YSize%:YSize%+=1
+:
+MaxX%=XSize%<<XEigFactor%
+MaxY%=YSize%<<YEigFactor%
+XStep%=1<<XEigFactor%
+YStep%=1<<YEigFactor%
+
+CentreX%=MaxX% DIV 2
+CentreY%=MaxY% DIV 2
+Radius =CentreX%
+Freq=-MaxX%/140
+FreqStep=XEigFactor% /14.966
+k = 700/(MaxX%^2)
+
+REM Centre pof the xone plate
+cx%=0:cy%=0
+
+FOR X%= 0 TO MaxX% STEP XStep%
+    FOR Y%= 0 TO MaxY% STEP YStep%
+            d = FNDist(X%,Y%,cx%,cy%)
+            p = COS( FNphase(d) )
+            level = INT( (p+1)*128)
+            GCOL level,level,level
+            PLOT 69,X%,Y%
+
+        NEXT
+NEXT
+
+END
+DEF FNDist(x1,y1,x2,y2)
+
+    xd = x1 - x2
+    yd= y1 - y2
+
+    = SQR ( (xd*xd )+( yd*yd) )
+
+
+DEF FNphase(r)
+
+    r2 = r * r
+    p = r2 * k
+    REM Remove common complete cycles
+    n = INT (p / (200*PI) )-1
+    n = n*200*PI
+
+    = p - n

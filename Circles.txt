@@ -1,0 +1,16 @@
+REM MODE MODE   :REM Reset Screen display. but leave in current mode.
+CLG
+OFF         : REM Turn off text cursor
+:
+REM The following four line read the current screen size co-ords.
+SYS "OS_ReadModeVariable",-1,4 TO ,,XEigFactor%
+SYS "OS_ReadModeVariable",-1,5 TO ,,YEigFactor%
+SYS "OS_ReadModeVariable",-1,11 TO ,,XSize%:XSize%+=1
+SYS "OS_ReadModeVariable",-1,12 TO ,,YSize%:YSize%+=1
+:
+MaxX%=XSize%<<XEigFactor%
+MaxY%=YSize%<<YEigFactor%
+
+CIRCLE MaxX%/2,MaxY%/2,(MaxX%/2)-16
+CIRCLE MaxX%/2,MaxY%/2,(MaxY%/2)-16
+REM OSCLI("<MonitorTest$Dir>.!Runimage")

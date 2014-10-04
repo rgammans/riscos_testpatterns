@@ -1,0 +1,73 @@
+REM MODE MODE   :REM Reset Screen display. but leave in current mode.
+ON ERROR PRINTREPORT$;" at line ";ERL:END
+
+REM START WITH GREY
+GCOL ON 192,192,192
+
+OFF         : REM Turn off text cursor
+:
+REM The following four line read the current screen size co-ords.
+SYS "OS_ReadModeVariable",-1,4 TO ,,XEigFactor%
+SYS "OS_ReadModeVariable",-1,5 TO ,,YEigFactor%
+SYS "OS_ReadModeVariable",-1,11 TO ,,XSize%:XSize%+=1
+SYS "OS_ReadModeVariable",-1,12 TO ,,YSize%:YSize%+=1
+:
+
+XStep%=1<<XEigFactor%
+YStep%=1<<YEigFactor%
+MaxX%=XSize%<<XEigFactor%
+MaxY%=YSize%<<YEigFactor%
+CentreX%=MaxX% DIV 2
+CentreY%=MaxY% DIV 2
+
+BSize% = 100
+Step%= 12
+
+B1Y%= CentreY%
+B1X%= CentreX%- (4*BSize%)
+
+B2Y% = CentreY%
+B2X%= CentreX% + (4*BSize%)
+
+
+
+REPEAT
+      GCOL ON 128,128,128
+      CLG
+      GCOL 0,0,0
+      PROCDrawBox( B1X%,B1Y%,BSize%)
+      GCOL 255,255,255
+      PROCDrawBox( B2X%,B2Y%,BSize%)
+
+      B1X% += Step%
+      B1Y% += Step%
+      B2X% += Step%
+      B2Y% += Step%
+
+      IF B1X%>MaxX% THEN B1X% -= MaxX%
+      IF B2X%>MaxX% THEN B2X% -= MaxX%
+
+      IF B1Y%>MaxY% THEN B1Y% -= MaxY%
+      IF B2Y%>MaxY% THEN B2Y% -= MaxY%
+
+      WAIT
+UNTIL FALSE
+
+
+END
+
+DEF PROCDrawBox(x%,y%,size%)
+  MOVE x%-size%,y%
+  MOVE x%-size%,y%+size%
+  PLOT 85,x%,y%+size%
+
+  MOVE x%+size%,y%+size%
+  PLOT 85,x%+size%,y%
+
+  MOVE  x%+size%,y%-size%
+  PLOT  85, x%,y%-size%
+
+  MOVE  x%-size%,y%-size%
+  PLOT  85,x%-size%,y%
+
+ENDPROC
